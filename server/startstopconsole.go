@@ -78,7 +78,7 @@ func Stop() error {
 	}
 
 	sessionName := GetSelectedServerSessionName()
-	cmd := exec.Command("screen", "-S", sessionName, "-X", "stuff", "stop\n")
+	cmd := exec.Command("screen", "-S", sessionName, "-X", "stuff", "\nstop\n")
 
 	// Run the command
 	err := cmd.Run()
