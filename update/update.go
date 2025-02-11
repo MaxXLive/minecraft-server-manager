@@ -16,14 +16,6 @@ import (
 // Define the GitHub repository (replace with your repository details)
 const githubRepo = "maxxlive/minecraft-server-manager"
 
-// Get the current version of the program (you can customize this)
-func getCurrentVersion() string {
-	// Replace this with your actual method to get the current version,
-	// e.g., by reading from a file or using a version flag.
-	// For example:
-	return "1.0.0"
-}
-
 // Fetch the latest release version from GitHub API
 func getLatestReleaseVersion() (string, error) {
 	url := fmt.Sprintf("https://api.github.com/repos/%s/releases/latest", githubRepo)
@@ -53,25 +45,6 @@ func getLatestReleaseVersion() (string, error) {
 	return strings.ReplaceAll(parts[len(parts)-1], "v", ""), nil
 }
 
-// Download the latest release from GitHub
-
-// Replace the old executable with the new one
-func replaceExecutable() error {
-	// We assume that the current executable is the one we are replacing
-	err := os.Remove("minecraft-server-manager")
-	if err != nil {
-		return fmt.Errorf("failed to remove old executable: %v", err)
-	}
-
-	// Rename the downloaded file (assuming it's downloaded in the current directory)
-	err = os.Rename("minecraft-server-manager", "/usr/local/bin/minecraft-server-manager")
-	if err != nil {
-		return fmt.Errorf("failed to replace executable: %v", err)
-	}
-
-	return nil
-}
-
 func CheckForUpdate(currentVersion string) {
 	// Get the current version
 	log.Info("Current version: v" + currentVersion)
@@ -91,17 +64,17 @@ func CheckForUpdate(currentVersion string) {
 }
 
 func updateAvailable(currentVersion string, latestVersion string) bool {
-	currentVersionFloat, err := strconv.ParseFloat(currentVersion, 32)
+	currentVersionInt, err := strconv.ParseInt(strings.ReplaceAll(currentVersion, ".", ""), 10, 32)
 	if err != nil {
 		log.Error("Could not compare versions")
 		return false
 	}
-	latestVersionFloat, err := strconv.ParseFloat(latestVersion, 32)
+	latestVersionInt, err := strconv.ParseInt(strings.ReplaceAll(latestVersion, ".", ""), 10, 32)
 	if err != nil {
 		log.Error("Could not compare versions")
 		return false
 	}
-	return latestVersionFloat > currentVersionFloat
+	return latestVersionInt > currentVersionInt
 }
 
 func getAppFullPath() (string, error) {
@@ -131,12 +104,12 @@ func RunUpdate(currentVersion string) {
 	}
 	log.Info("Latest version: v" + latestVersion)
 
-	log.Info("Downloading to path: " + appPath)
-
 	if !updateAvailable(currentVersion, latestVersion) {
 		log.Info("You are up to date! No need to update")
 		return
 	}
+
+	log.Info("Downloading to path: " + appPath)
 
 	downloadURL := fmt.Sprintf("https://github.com/%s/releases/download/v%s/%s_%s_%s", githubRepo, latestVersion, "minecraft-server-manager", runtime.GOOS, runtime.GOARCH)
 
