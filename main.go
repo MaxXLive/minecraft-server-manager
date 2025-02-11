@@ -11,7 +11,7 @@ import (
 	"os/exec"
 )
 
-var version = "1.4"
+var version = "1.5"
 
 func main() {
 	fmt.Println("--------- [ MINECRAFT SERVER MANAGER ] ---------")

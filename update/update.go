@@ -69,65 +69,8 @@ func replaceExecutable() error {
 		return fmt.Errorf("failed to replace executable: %v", err)
 	}
 
-	// Make the new executable executable
-	err = os.Chmod("/usr/local/bin/minecraft-server-manager", 0755)
-	if err != nil {
-		return fmt.Errorf("failed to make new executable: %v", err)
-	}
-
 	return nil
 }
-
-//func Update() {
-//	// Get the current version
-//	currentVersion := getCurrentVersion()
-//
-//	// Get the latest release version from GitHub
-//	latestVersion, err := getLatestReleaseVersion()
-//	if err != nil {
-//		fmt.Println("Error fetching latest release:", err)
-//		return
-//	}
-//
-//	// Compare versions using the semver package
-//	currentSemver, err := semver.Parse(currentVersion)
-//	if err != nil {
-//		fmt.Println("Error parsing current version:", err)
-//		return
-//	}
-//
-//	latestSemver, err := semver.Parse(latestVersion)
-//	if err != nil {
-//		fmt.Println("Error parsing latest version:", err)
-//		return
-//	}
-//
-//	// Compare versions
-//	if latestSemver.GT(currentSemver) {
-//		// New version is available
-//		fmt.Printf("New version available: %s (current: %s)\n", latestVersion, currentVersion)
-//
-//		// Download and replace the executable
-//		err := downloadLatestRelease(latestVersion)
-//		if err != nil {
-//			fmt.Println("Error downloading latest release:", err)
-//			return
-//		}
-//
-//		// Replace the old executable with the new one
-//		err = replaceExecutable()
-//		if err != nil {
-//			fmt.Println("Error replacing executable:", err)
-//			return
-//		}
-//
-//		// Done
-//		fmt.Println("Update successful. Please restart the program.")
-//	} else {
-//		// Already up-to-date
-//		fmt.Println("You are already running the latest version.")
-//	}
-//}
 
 func CheckForUpdate(currentVersion string) {
 	// Get the current version
@@ -205,5 +148,11 @@ func RunUpdate(currentVersion string) {
 	err = cmd.Run()
 	if err != nil {
 		log.Error(err)
+	}
+
+	// Make the new executable executable
+	err = os.Chmod(appPath, 0755)
+	if err != nil {
+		log.Error(fmt.Errorf("failed to make new executable: %v", err))
 	}
 }
