@@ -134,6 +134,7 @@ func PrintHelp(appName string, version string) {
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{"Command", "Description"})
 	t.AppendRows([]table.Row{{"start", "Start the minecraft server"}})
+	t.AppendRows([]table.Row{{"start-bg", "Start the minecraft server in background"}})
 	t.AppendRows([]table.Row{{"stop", "Stop the minecraft server"}})
 	t.AppendRows([]table.Row{{"console", "Attach to the minecraft server's console"}})
 	t.AppendRows([]table.Row{{"status", "Show the status of the minecraft server"}})
@@ -145,6 +146,9 @@ func PrintHelp(appName string, version string) {
 	t.AppendRows([]table.Row{{"remove", "Remove a server from config"}})
 	t.AppendSeparator()
 	t.AppendRows([]table.Row{{"help", "Show this help message"}})
+	t.AppendRows([]table.Row{{"versions", "Shows just the version number"}})
+	t.AppendRows([]table.Row{{"check-update", "Checks for updates"}})
+	t.AppendRows([]table.Row{{"update", "Update this app"}})
 	t.AppendFooter(table.Row{"Version", version})
 	t.Render()
 

@@ -29,12 +29,40 @@ func Start() {
 
 	sessionName := GetSelectedServerSessionName()
 
-	cmd := exec.Command("screen", "-S", sessionName, "bash", "-c", fmt.Sprintf("cd %s && %s -Xms%dM -Xmx%dM -jar %s --nogui", dirPath, server.JavaPath, server.MaxRAM, server.MaxRAM, server.JarPath))
+	cmd := exec.Command("screen", "-S", sessionName, "bash", "-c", fmt.Sprintf("cd %s && %s -Xms%dM -Xmx%dM -jar %s --nogui", dirPath, server.JavaPath, server.MaxRAM/2, server.MaxRAM, server.JarPath))
 
 	// Set the standard input, output, and error to the current process
 	cmd.Stdin = os.Stdin   // Enable user input
 	cmd.Stdout = os.Stdout // Show command output
 	cmd.Stderr = os.Stderr // Show error messages
+
+	// Start the command and attach to it
+	err = cmd.Run()
+	if err != nil {
+		fmt.Println("\033[31mError executing command:\033[0m", err)
+		return
+	}
+}
+
+func StartInBackground() {
+	server, err := GetSelected()
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	if IsServerRunning() {
+		log.Error("Server is already running! Stop server first")
+		return
+	}
+
+	log.Info("Selected Server: " + server.Name)
+	log.Info("Starting in background...")
+
+	dirPath := filepath.Dir(server.JarPath)
+
+	sessionName := GetSelectedServerSessionName()
+
+	cmd := exec.Command("screen", "-dmS", sessionName, "bash", "-c", fmt.Sprintf("cd %s && %s -Xms%dM -Xmx%dM -jar %s --nogui", dirPath, server.JavaPath, server.MaxRAM/2, server.MaxRAM, server.JarPath))
 
 	// Start the command and attach to it
 	err = cmd.Run()

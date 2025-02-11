@@ -5,11 +5,12 @@ import (
 	"minecraft-server-manager/cli"
 	"minecraft-server-manager/log"
 	"minecraft-server-manager/server"
+	"minecraft-server-manager/update"
 	"os"
 	"os/exec"
 )
 
-var version = "1.1"
+var version = "1.2"
 
 func main() {
 	fmt.Println("--------- [ MINECRAFT SERVER MANAGER ] ---------")
@@ -36,6 +37,9 @@ func main() {
 	case "start":
 		server.Start()
 		return
+	case "start-bg":
+		server.StartInBackground()
+		return
 	case "stop":
 		server.Stop()
 		return
@@ -50,6 +54,12 @@ func main() {
 		return
 	case "version":
 		log.Info("Version: " + version)
+		return
+	case "check-update":
+		update.CheckForUpdate(version)
+		return
+	case "update":
+		update.RunUpdate(os.Args[0], version)
 		return
 	default:
 		cli.PrintHelp(os.Args[0], version)
