@@ -1,0 +1,59 @@
+name: Build and Release
+
+# Trigger the action when there's a push to the main branch
+on:
+  push:
+    branches:
+      - main
+  # You can also trigger manually by dispatching the event from GitHub UI
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Setup golang
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23' # You can change the Go version based on your needs
+
+      # Step 3: Build go files
+      - name: Run build script
+        run: |
+          chmod +x ./build.sh
+          ./build.sh
+
+      # Step 4: Create release
+      - name: Upload files
+        uses: actions/upload-artifact@v4
+        with:
+          name: minecraft-plugin-jar
+          path: target/mx*.jar
+
+      # Step 5: Extract version
+      - name: Extract version
+        id: extract_version
+        run: |
+          VERSION=v1.0
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Version extracted: $VERSION"
+
+      # Step 6: set release name
+      - name: Set release name
+        id: set_release_name
+        run: echo "RELEASE_NAME=$(basename $GITHUB_REPOSITORY) ${{ env.VERSION }}" >> $GITHUB_ENV
+
+      # Step 7: Upload JAR to GitHub Release
+      - name: Upload JAR to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.MXVOTE_CREATE_RELEASE }}
+          files: build/minecraft*
+          tag_name: ${{ env.VERSION }}
+          name: ${{ env.RELEASE_NAME }}

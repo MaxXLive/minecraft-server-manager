@@ -10,6 +10,10 @@ const (
 	reset = "\033[0m"
 )
 
-func Error(err string) {
+func Info(str interface{}) {
+	fmt.Println(str)
+}
+
+func Error(err interface{}) {
 	fmt.Fprintf(os.Stderr, "%sError: %s%s\n", red, err, reset)
 }
