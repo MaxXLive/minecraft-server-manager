@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"minecraft-server-manager/log"
 	"minecraft-server-manager/server"
+	"minecraft-server-manager/system"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -64,7 +65,7 @@ func uploadServerData(dir string) {
 
 	for _, cmd := range commands {
 		fmt.Println("Running:", cmd)
-		if err := runCommand(cmd...); err != nil {
+		if err := system.RunCommand(cmd...); err != nil {
 			log.Error(fmt.Sprintf("Command failed: %v", err))
 			break
 		}
@@ -88,11 +89,4 @@ func broadcastMessage(message string) error {
 		return err
 	}
 	return nil
-}
-
-func runCommand(command ...string) error {
-	cmd := exec.Command(command[0], command[1:]...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	return cmd.Run()
 }

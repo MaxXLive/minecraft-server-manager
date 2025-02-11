@@ -161,7 +161,22 @@ func updateAvailable(currentVersion string, latestVersion string) bool {
 	return latestVersionFloat > currentVersionFloat
 }
 
-func RunUpdate(appName string, currentVersion string) {
+func getAppFullPath() (string, error) {
+	exePath, err := os.Executable()
+	if err != nil {
+		return "", err
+	}
+
+	return exePath, nil
+}
+
+func RunUpdate(currentVersion string) {
+	appPath, err := getAppFullPath()
+	if err != nil {
+		log.Error(err)
+		return
+	}
+
 	// Get the current version
 	log.Info("Current version: v" + currentVersion)
 
@@ -181,7 +196,7 @@ func RunUpdate(appName string, currentVersion string) {
 	downloadURL := fmt.Sprintf("https://github.com/%s/releases/download/v%s/%s_%s_%s", githubRepo, latestVersion, "minecraft-server-manager", runtime.GOOS, runtime.GOARCH)
 
 	// Use curl to download the latest release (you can also use Go's http client here)
-	cmd := exec.Command("curl", "--progress-bar", "-L", "-o", appName, downloadURL)
+	cmd := exec.Command("curl", "--progress-bar", "-L", "-o", appPath, downloadURL)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 

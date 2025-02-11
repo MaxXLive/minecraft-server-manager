@@ -60,7 +60,7 @@ func main() {
 		update.CheckForUpdate(version)
 		return
 	case "update":
-		update.RunUpdate(os.Args[0], version)
+		update.RunUpdate(version)
 		return
 	case "backup":
 		backup.Start()
