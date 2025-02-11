@@ -188,6 +188,8 @@ func RunUpdate(currentVersion string) {
 	}
 	log.Info("Latest version: v" + latestVersion)
 
+	log.Info("Downloading to path: " + appPath)
+
 	if !updateAvailable(currentVersion, latestVersion) {
 		log.Info("You are up to date! No need to update")
 		return
