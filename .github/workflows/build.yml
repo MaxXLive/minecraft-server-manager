@@ -53,7 +53,7 @@ jobs:
       - name: Upload JAR to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          token: ${{ secrets.MXVOTE_CREATE_RELEASE }}
+          token: ${{ secrets.CREATE_RELEASE }}
           files: build/minecraft*
           tag_name: ${{ env.VERSION }}
           name: ${{ env.RELEASE_NAME }}
