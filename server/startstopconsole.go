@@ -72,10 +72,9 @@ func StartInBackground() {
 	}
 }
 
-func Stop() {
+func Stop() error {
 	if !IsServerRunning() {
-		log.Error("Server is not running!")
-		return
+		return fmt.Errorf("Server is not running!")
 	}
 
 	sessionName := GetSelectedServerSessionName()
@@ -84,7 +83,7 @@ func Stop() {
 	// Run the command
 	err := cmd.Run()
 	if err != nil {
-		log.Error("failed to send command:")
+		return fmt.Errorf("failed to send command:")
 	}
 
 	// Start the spinner in a separate goroutine
@@ -106,9 +105,10 @@ func Stop() {
 	stopChan <- true
 	if i < maxTries {
 		fmt.Println("Done!")
-	} else {
-		log.Error("Could not stop server. Try connecting and stopping manually")
+		return nil
 	}
+
+	return fmt.Errorf("Could not stop server. Try connecting and stopping manually")
 }
 
 func IsServerRunning() bool {

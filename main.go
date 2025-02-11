@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"minecraft-server-manager/backup"
 	"minecraft-server-manager/cli"
 	"minecraft-server-manager/log"
 	"minecraft-server-manager/server"
@@ -10,7 +11,7 @@ import (
 	"os/exec"
 )
 
-var version = "1.2"
+var version = "1.3"
 
 func main() {
 	fmt.Println("--------- [ MINECRAFT SERVER MANAGER ] ---------")
@@ -61,6 +62,8 @@ func main() {
 	case "update":
 		update.RunUpdate(os.Args[0], version)
 		return
+	case "backup":
+		backup.Start()
 	default:
 		cli.PrintHelp(os.Args[0], version)
 		return
