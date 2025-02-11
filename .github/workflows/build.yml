@@ -34,13 +34,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: minecraft-plugin-jar
-          path: target/mx*.jar
+          path: build/minecraft*
 
       # Step 5: Extract version
       - name: Extract version
         id: extract_version
         run: |
-          version_output="$(./minecraft-server-manager_linux_amd64 version)"
+          version_output="$(./build/minecraft-server-manager_linux_amd64 version)"
           VERSION=$(echo "$version_output" | grep -oP '(?<=Version: )[\d\.]+')
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "Version extracted: $VERSION"
