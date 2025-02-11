@@ -40,7 +40,8 @@ jobs:
       - name: Extract version
         id: extract_version
         run: |
-          VERSION=v1.0
+          version_output="$(./minecraft-server-manager_linux_amd64 version)"
+          VERSION=$(echo "$version_output" | grep -oP '(?<=Version: )[\d\.]+')
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "Version extracted: $VERSION"
 

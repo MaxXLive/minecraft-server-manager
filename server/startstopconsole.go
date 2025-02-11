@@ -29,7 +29,7 @@ func Start() {
 
 	sessionName := GetSelectedServerSessionName()
 
-	cmd := exec.Command("screen", "-S", sessionName, "bash", "-c", fmt.Sprintf("cd %s && %s -Xms%dM -Xmx%dM -jar %s --nogui", dirPath, server.JavaPath, server.MaxRAM, server.MaxRAM, server.JavaPath))
+	cmd := exec.Command("screen", "-S", sessionName, "bash", "-c", fmt.Sprintf("cd %s && %s -Xms%dM -Xmx%dM -jar %s --nogui", dirPath, server.JavaPath, server.MaxRAM, server.MaxRAM, server.JarPath))
 
 	// Set the standard input, output, and error to the current process
 	cmd.Stdin = os.Stdin   // Enable user input

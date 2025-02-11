@@ -9,7 +9,7 @@ import (
 	"os/exec"
 )
 
-var version = "1.0"
+var version = "1.1"
 
 func main() {
 	fmt.Println("--------- [ MINECRAFT SERVER MANAGER ] ---------")
@@ -47,6 +47,9 @@ func main() {
 		return
 	case "select":
 		cli.SelectServer()
+		return
+	case "version":
+		log.Info("Version: " + version)
 		return
 	default:
 		cli.PrintHelp(os.Args[0], version)
