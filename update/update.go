@@ -110,21 +110,42 @@ func RunUpdate(currentVersion string, force bool) {
 
 	log.Info("Downloading to path: " + appPath)
 
-	downloadURL := fmt.Sprintf("https://github.com/%s/releases/download/v%s/%s_%s_%s", githubRepo, latestVersion, "minecraft-server-manager", runtime.GOOS, runtime.GOARCH)
+	err = updateScript(appPath, latestVersion)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+}
 
-	// Use curl to download the latest release (you can also use Go's http client here)
-	cmd := exec.Command("curl", "--progress-bar", "-L", "-o", appPath, downloadURL)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+func updateScript(appPath string, latestVersion string) error {
+	// Create the updater script
+	scriptPath := "/tmp/msm_updater.sh"
+
+	script := "#!/bin/bash\n"
+	script += "echo 'Starting self-updater...'\n"
+	script += "sleep 2\n"
+	script += fmt.Sprintf("curl --progress-bar -L -o %s https://github.com/%s/releases/download/v%s/%s_%s_%s\n", appPath, githubRepo, latestVersion, "minecraft-server-manager", runtime.GOOS, runtime.GOARCH)
+	script += fmt.Sprintf("chmod +x %s\n", appPath)
+	script += "echo 'Update done'\n"
+	script += fmt.Sprintf("rm %s", scriptPath)
+
+	// Write the script to a file
+	err := os.WriteFile(scriptPath, []byte(script), 0755)
+	if err != nil {
+		return err
+	}
+
+	// Run the update script in the background
+	cmd := exec.Command("bash", scriptPath)
+
+	cmd.Stdin = os.Stdin   // Enable user input
+	cmd.Stdout = os.Stdout // Show command output
+	cmd.Stderr = os.Stderr // Show error messages
 
 	err = cmd.Run()
 	if err != nil {
 		log.Error(err)
 	}
-
-	// Make the new executable executable
-	err = os.Chmod(appPath, 0755)
-	if err != nil {
-		log.Error(fmt.Errorf("failed to make new executable: %v", err))
-	}
+	os.Exit(0)
+	return nil
 }
