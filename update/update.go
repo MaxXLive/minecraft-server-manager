@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
+	"time"
 )
 
 const githubRepo = "maxxlive/minecraft-server-manager"
@@ -144,10 +145,14 @@ func updateScript(appPath string, latestVersion string) error {
 	cmd.Stdout = os.Stdout // Show command output
 	cmd.Stderr = os.Stderr // Show error messages
 
+	go func() {
+		time.Sleep(1 * time.Second)
+		os.Exit(0)
+	}()
+
 	err = cmd.Run()
 	if err != nil {
 		log.Error(err)
 	}
-	os.Exit(0)
 	return nil
 }
