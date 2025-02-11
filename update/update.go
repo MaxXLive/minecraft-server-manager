@@ -118,6 +118,8 @@ func RunUpdate(currentVersion string, force bool) {
 }
 
 func updateScript(appPath string, latestVersion string) error {
+	fmt.Println("Starting self-update process...")
+
 	// Create the updater script
 	scriptPath := "/tmp/msm_updater.sh"
 
@@ -136,7 +138,7 @@ func updateScript(appPath string, latestVersion string) error {
 	}
 
 	// Run the update script in the background
-	cmd := exec.Command("bash", scriptPath)
+	cmd := exec.Command("screen", "-S", "msm_updater", "bash", scriptPath)
 
 	cmd.Stdin = os.Stdin   // Enable user input
 	cmd.Stdout = os.Stdout // Show command output
