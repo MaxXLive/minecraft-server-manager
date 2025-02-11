@@ -3,17 +3,16 @@ package update
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/hashicorp/go-version"
 	"io/ioutil"
 	"minecraft-server-manager/log"
 	"net/http"
 	"os"
 	"os/exec"
 	"runtime"
-	"strconv"
 	"strings"
 )
 
-// Define the GitHub repository (replace with your repository details)
 const githubRepo = "maxxlive/minecraft-server-manager"
 
 // Fetch the latest release version from GitHub API
@@ -64,17 +63,17 @@ func CheckForUpdate(currentVersion string) {
 }
 
 func updateAvailable(currentVersion string, latestVersion string) bool {
-	currentVersionInt, err := strconv.ParseInt(strings.ReplaceAll(currentVersion, ".", ""), 10, 32)
+	currentVersionValue, err := version.NewVersion(currentVersion)
 	if err != nil {
 		log.Error("Could not compare versions")
 		return false
 	}
-	latestVersionInt, err := strconv.ParseInt(strings.ReplaceAll(latestVersion, ".", ""), 10, 32)
+	latestVersionValue, err := version.NewVersion(latestVersion)
 	if err != nil {
 		log.Error("Could not compare versions")
 		return false
 	}
-	return latestVersionInt > currentVersionInt
+	return latestVersionValue.GreaterThan(currentVersionValue)
 }
 
 func getAppFullPath() (string, error) {
