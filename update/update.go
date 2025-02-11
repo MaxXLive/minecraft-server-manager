@@ -85,7 +85,7 @@ func getAppFullPath() (string, error) {
 	return exePath, nil
 }
 
-func RunUpdate(currentVersion string) {
+func RunUpdate(currentVersion string, force bool) {
 	appPath, err := getAppFullPath()
 	if err != nil {
 		log.Error(err)
@@ -103,7 +103,7 @@ func RunUpdate(currentVersion string) {
 	}
 	log.Info("Latest version: v" + latestVersion)
 
-	if !updateAvailable(currentVersion, latestVersion) {
+	if !force && !updateAvailable(currentVersion, latestVersion) {
 		log.Info("You are up to date! No need to update")
 		return
 	}

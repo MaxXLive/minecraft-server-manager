@@ -11,7 +11,7 @@ import (
 	"os/exec"
 )
 
-var version = "1.5.2"
+var version = "1.5.3"
 
 func main() {
 	fmt.Println("--------- [ MINECRAFT SERVER MANAGER ] ---------")
@@ -42,7 +42,7 @@ func main() {
 		server.StartInBackground()
 		return
 	case "stop":
-		server.Stop()
+		_ = server.Stop()
 		return
 	case "console":
 		server.Attach()
@@ -56,11 +56,11 @@ func main() {
 	case "version":
 		log.Info("Version: " + version)
 		return
-	case "check-update":
+	case "check":
 		update.CheckForUpdate(version)
 		return
 	case "update":
-		update.RunUpdate(version)
+		update.RunUpdate(version, includes(os.Args, "--force"))
 		return
 	case "backup":
 		backup.Start()
@@ -75,4 +75,13 @@ func checkPrerequisites() {
 	if err != nil {
 		log.Error("Screen is not installed! Please use apt install screen")
 	}
+}
+
+func includes(args []string, target string) bool {
+	for _, arg := range args {
+		if arg == target {
+			return true
+		}
+	}
+	return false
 }

@@ -147,8 +147,8 @@ func PrintHelp(appName string, version string) {
 	t.AppendSeparator()
 	t.AppendRows([]table.Row{{"help", "Show this help message"}})
 	t.AppendRows([]table.Row{{"versions", "Shows just the version number"}})
-	t.AppendRows([]table.Row{{"check-update", "Checks for updates"}})
-	t.AppendRows([]table.Row{{"update", "Update this app"}})
+	t.AppendRows([]table.Row{{"check", "Checks for updates"}})
+	t.AppendRows([]table.Row{{"update [--force]", "Update this app"}})
 	t.AppendFooter(table.Row{"Version", version})
 	t.Render()
 
