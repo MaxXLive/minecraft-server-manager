@@ -12,8 +12,6 @@ This is a Minecraft Server Manager written in Go that allows you to manage Minec
 
 ## TODO
 - Check for updates dependent on the server type (vanilla, paper, fabric)
-- Automatic backup option (notify, stop, git push, start)
-- Start the server in the background
 
 ## Prerequisites
 
