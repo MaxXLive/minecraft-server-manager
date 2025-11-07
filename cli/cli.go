@@ -2,9 +2,6 @@ package cli
 
 import (
 	"fmt"
-	"github.com/chzyer/readline"
-	"github.com/google/uuid"
-	"github.com/jedib0t/go-pretty/v6/table"
 	"minecraft-server-manager/config"
 	"minecraft-server-manager/log"
 	"minecraft-server-manager/server"
@@ -13,6 +10,10 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/chzyer/readline"
+	"github.com/google/uuid"
+	"github.com/jedib0t/go-pretty/v6/table"
 )
 
 func AddServer() {
@@ -136,9 +137,10 @@ func PrintHelp(appName string, version string) {
 	t.AppendRows([]table.Row{{"start", "Start the minecraft server"}})
 	t.AppendRows([]table.Row{{"start-bg", "Start the minecraft server in background"}})
 	t.AppendRows([]table.Row{{"stop", "Stop the minecraft server"}})
-	t.AppendRows([]table.Row{{"console", "Attach to the minecraft server's console"}})
-	t.AppendRows([]table.Row{{"status", "Show the status of the minecraft server"}})
+	t.AppendRows([]table.Row{{"console (c)", "Attach to the minecraft server's console"}})
+	t.AppendRows([]table.Row{{"status (s)", "Show the status of the minecraft server"}})
 	t.AppendRows([]table.Row{{"restart", "Restart the minecraft server"}})
+	t.AppendRows([]table.Row{{"backup (b)", "Stops the server, creates a backup, pushes the changes to git repo and restarts the server"}})
 	t.AppendSeparator()
 	t.AppendRows([]table.Row{{"list", "List saved servers in config"}})
 	t.AppendRows([]table.Row{{"select", "Select from servers in config"}})
