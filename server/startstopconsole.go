@@ -92,7 +92,7 @@ func Stop() error {
 
 	// Wait until the screen session is no longer listed
 	i := 0
-	maxTries := 20
+	maxTries := 50
 
 	for i = 0; i < maxTries; i++ {
 		if !IsServerRunning() {
