@@ -12,6 +12,7 @@ import (
 )
 
 func Start() {
+	fmt.Println("Starting backup process...")
 	if server.IsServerRunning() {
 		err := broadcastMessage("Server will restart in 30 seconds...")
 		if err != nil {
