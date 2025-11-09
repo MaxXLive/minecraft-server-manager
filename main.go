@@ -11,7 +11,7 @@ import (
 	"os/exec"
 )
 
-var version = "1.5.8"
+var version = "1.5.9"
 
 func main() {
 	fmt.Println("--------- [ MINECRAFT SERVER MANAGER ] ---------")
@@ -44,12 +44,10 @@ func main() {
 	case "stop":
 		_ = server.Stop()
 		return
-	case "console":
-	case "c":
+	case "console", "c":
 		server.Attach()
 		return
-	case "status":
-	case "s":
+	case "status", "s":
 		server.Status()
 		return
 	case "select":
@@ -64,8 +62,7 @@ func main() {
 	case "update":
 		update.RunUpdate(version, includes(os.Args, "--force"))
 		return
-	case "backup":
-	case "b":
+	case "backup", "b":
 		backup.Start()
 		return
 	default:
