@@ -11,7 +11,7 @@ import (
 	"os/exec"
 )
 
-var version = "1.5.7"
+var version = "1.5.8"
 
 func main() {
 	fmt.Println("--------- [ MINECRAFT SERVER MANAGER ] ---------")
@@ -67,6 +67,7 @@ func main() {
 	case "backup":
 	case "b":
 		backup.Start()
+		return
 	default:
 		cli.PrintHelp(os.Args[0], version)
 		return
