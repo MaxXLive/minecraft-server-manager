@@ -12,7 +12,8 @@ import (
 )
 
 func Start() {
-	if server.IsServerRunning() {
+	running := server.IsServerRunning()
+	if running {
 		fmt.Println("Stopping server in 30 seconds for backup...")
 		err := broadcastMessage("Server will restart in 30 seconds...")
 		if err != nil {
@@ -28,6 +29,13 @@ func Start() {
 			}
 			time.Sleep(time.Second)
 		}
+
+		err = server.KillEntities()
+		if err != nil {
+			log.Error(err)
+			fmt.Printf("Failed to kill entities: %v, skipping...\n", err)
+		}
+
 		err = server.Stop()
 		if err != nil {
 			log.Error(err)
@@ -35,14 +43,18 @@ func Start() {
 		}
 	}
 
-	server, err := server.GetSelected()
+	selectedServer, err := server.GetSelected()
 	if err != nil {
 		log.Error(err)
 		return
 	}
-	dirPath := filepath.Dir(server.JarPath)
+	dirPath := filepath.Dir(selectedServer.JarPath)
 
 	uploadServerData(dirPath)
+	if running {
+		fmt.Println("Starting server after backup...")
+		server.StartInBackground()
+	}
 }
 
 // uploadServerData commits and pushes the latest changes to a Git repository
@@ -73,7 +85,6 @@ func uploadServerData(dir string) {
 	}
 
 	fmt.Println("Upload done")
-	server.StartInBackground()
 }
 
 func broadcastMessage(message string) error {

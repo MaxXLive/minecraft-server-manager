@@ -171,3 +171,18 @@ func Status() {
 		println("Server is stopped!")
 	}
 }
+
+func KillEntities() error {
+	if !IsServerRunning() {
+		return fmt.Errorf("server is not running")
+	}
+
+	sessionName := GetSelectedServerSessionName()
+	cmd := exec.Command("screen", "-S", sessionName, "-X", "stuff", "\nkill @e[type=item]\n")
+	// Run the command
+	err := cmd.Run()
+	if err != nil {
+		return fmt.Errorf("failed to send command")
+	}
+	return nil
+}
