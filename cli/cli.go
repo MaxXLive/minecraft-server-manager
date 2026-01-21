@@ -147,8 +147,10 @@ func PrintHelp(appName string, version string) {
 	t.AppendRows([]table.Row{{"add", "Add new server to config"}})
 	t.AppendRows([]table.Row{{"remove", "Remove a server from config"}})
 	t.AppendSeparator()
+	t.AppendRows([]table.Row{{"logfile [enable|disable]", "Show or set log file status"}})
+	t.AppendSeparator()
 	t.AppendRows([]table.Row{{"help", "Show this help message"}})
-	t.AppendRows([]table.Row{{"versions", "Shows just the version number"}})
+	t.AppendRows([]table.Row{{"version", "Shows just the version number"}})
 	t.AppendRows([]table.Row{{"check", "Checks for updates"}})
 	t.AppendRows([]table.Row{{"update [--force]", "Update this app"}})
 	t.AppendFooter(table.Row{"Version", version})
@@ -175,6 +177,43 @@ func SelectServer() {
 		return
 	}
 	println("Successfully selected server: " + servers[selectedIndex-1].Name)
+}
+
+func LogFile(args []string) {
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		log.Error("Failed to load config")
+		return
+	}
+
+	// No argument - show current status
+	if len(args) == 0 {
+		status := "disabled"
+		if cfg.LogFileEnabled {
+			status = "enabled"
+		}
+		log.Info("Log file is currently: " + status)
+		return
+	}
+
+	switch args[0] {
+	case "enable":
+		cfg.LogFileEnabled = true
+		if err := config.SaveConfig(cfg); err != nil {
+			log.Error("Failed to save config")
+			return
+		}
+		log.Info("Log file enabled")
+	case "disable":
+		cfg.LogFileEnabled = false
+		if err := config.SaveConfig(cfg); err != nil {
+			log.Error("Failed to save config")
+			return
+		}
+		log.Info("Log file disabled")
+	default:
+		log.Error("Invalid argument. Use 'enable' or 'disable'")
+	}
 }
 
 func promptInput(prompt string) string {

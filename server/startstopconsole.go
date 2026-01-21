@@ -231,10 +231,24 @@ func Attach() {
 }
 
 func Status() {
+	server, err := GetSelected()
+	if err != nil {
+		log.Error(err)
+		return
+	}
+
 	if IsServerRunning() {
-		println("Server is running...")
+		log.Info("Server is running...")
+
+		if server.HealthCheckEnabled {
+			if checkHealthEndpoint() {
+				log.Info("Health check: healthy")
+			} else {
+				log.Error("Health check: unhealthy")
+			}
+		}
 	} else {
-		println("Server is stopped!")
+		log.Info("Server is stopped!")
 	}
 }
 

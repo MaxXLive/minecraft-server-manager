@@ -69,6 +69,9 @@ func main() {
 	case "backup", "b":
 		backup.Start()
 		return
+	case "logfile":
+		cli.LogFile(os.Args[2:])
+		return
 	default:
 		cli.PrintHelp(os.Args[0], version)
 		return
