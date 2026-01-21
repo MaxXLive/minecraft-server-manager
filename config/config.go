@@ -3,7 +3,6 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"minecraft-server-manager/log"
 	"os"
 	"path/filepath"
 )
@@ -41,14 +40,14 @@ func LoadConfig() (ManagerConfig, error) {
 	// Read the file
 	data, err := os.ReadFile(configFilePath)
 	if err != nil {
-		log.Error("Could not load config: " + err.Error())
+		fmt.Fprintf(os.Stderr, "Error: Could not load config: %s\n", err.Error())
 		return config, err
 	}
 
 	// Parse JSON
 	err = json.Unmarshal(data, &config)
 	if err != nil {
-		log.Error("Could not load config: " + err.Error())
+		fmt.Fprintf(os.Stderr, "Error: Could not load config: %s\n", err.Error())
 		return config, err
 	}
 
@@ -60,7 +59,7 @@ func LoadConfig() (ManagerConfig, error) {
 func SaveConfig(config ManagerConfig) error {
 	data, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {
-		log.Error("Could not save config: " + err.Error())
+		fmt.Fprintf(os.Stderr, "Error: Could not save config: %s\n", err.Error())
 		return err
 	}
 
@@ -78,4 +77,21 @@ func GetServerPrefix() (string, error) {
 		return "", err
 	}
 	return config.ScreenName, nil
+}
+
+func IsLogFileEnabled() bool {
+	config, err := LoadConfig()
+	if err != nil {
+		return false
+	}
+	return config.LogFileEnabled
+}
+
+func GetLogFilePath() (string, error) {
+	executablePath, err := os.Executable()
+	if err != nil {
+		return "", fmt.Errorf("failed to get executable path: %v", err)
+	}
+	executableDir := filepath.Dir(executablePath)
+	return filepath.Join(executableDir, "status.log"), nil
 }

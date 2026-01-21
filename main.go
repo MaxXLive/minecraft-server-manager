@@ -15,6 +15,7 @@ var version = "1.6.0"
 
 func main() {
 	fmt.Println("--------- [ MINECRAFT SERVER MANAGER ] ---------")
+	log.Init()
 	checkPrerequisites()
 
 	if len(os.Args) < 2 {
@@ -43,6 +44,9 @@ func main() {
 		return
 	case "stop":
 		_ = server.Stop()
+		return
+	case "restart", "r":
+		server.Restart()
 		return
 	case "console", "c":
 		server.Attach()

@@ -56,20 +56,54 @@ func StartInBackground() {
 	}
 
 	log.Info("Selected Server: " + server.Name)
-	log.Info("Starting in background...")
 
+	for attempt := 1; attempt <= maxStartRetries; attempt++ {
+		if attempt > 1 {
+			log.Info(fmt.Sprintf("Retry attempt %d/%d...", attempt, maxStartRetries))
+		}
+
+		log.Info("Starting in background...")
+
+		if err := startServerProcess(server); err != nil {
+			log.Error(fmt.Sprintf("Error starting server: %v", err))
+			continue
+		}
+
+		// If health check is not enabled, we're done
+		if !server.HealthCheckEnabled {
+			return
+		}
+
+		log.Info(fmt.Sprintf("Waiting for server to become healthy (timeout: %v)...", healthCheckTimeout))
+
+		if WaitForHealthy() {
+			log.Info("Server is healthy and ready!")
+			return
+		}
+
+		log.Error("Health check failed - server did not respond in time")
+
+		if IsServerRunning() {
+			log.Info("Killing screen session...")
+			if err := Kill(); err != nil {
+				log.Error(fmt.Sprintf("Failed to kill session: %v", err))
+			}
+		}
+		time.Sleep(2 * time.Second) // Wait before retrying
+	}
+
+	log.Error(fmt.Sprintf("Failed to start server after %d attempts", maxStartRetries))
+}
+
+func startServerProcess(server config.Server) error {
 	dirPath := filepath.Dir(server.JarPath)
-
 	sessionName := GetSelectedServerSessionName()
 
-	cmd := exec.Command("screen", "-dmS", sessionName, "bash", "-c", fmt.Sprintf("cd %s && %s -Xms%dM -Xmx%dM -jar %s --nogui", dirPath, server.JavaPath, server.MaxRAM/2, server.MaxRAM, server.JarPath))
+	cmd := exec.Command("screen", "-dmS", sessionName, "bash", "-c",
+		fmt.Sprintf("cd %s && %s -Xms%dM -Xmx%dM -jar %s --nogui",
+			dirPath, server.JavaPath, server.MaxRAM/2, server.MaxRAM, server.JarPath))
 
-	// Start the command and attach to it
-	err = cmd.Run()
-	if err != nil {
-		fmt.Println("\033[31mError executing command:\033[0m", err)
-		return
-	}
+	return cmd.Run()
 }
 
 func Stop() error {
@@ -109,6 +143,38 @@ func Stop() error {
 	}
 
 	return fmt.Errorf("Could not stop server. Try connecting and stopping manually")
+}
+
+func Restart() {
+	log.Info("Restarting server...")
+
+	if IsServerRunning() {
+		err := Stop()
+		if err != nil {
+			log.Error(err)
+			return
+		}
+		time.Sleep(2 * time.Second) // Wait a moment before starting again
+	}
+
+	StartInBackground()
+}
+
+func Kill() error {
+	if !IsServerRunning() {
+		return fmt.Errorf("server is not running")
+	}
+
+	sessionName := GetSelectedServerSessionName()
+	cmd := exec.Command("screen", "-S", sessionName, "-X", "quit")
+	err := cmd.Run()
+	if err != nil {
+		return fmt.Errorf("failed to kill session: %v", err)
+	}
+
+	// Wait for session to fully terminate
+	time.Sleep(2 * time.Second)
+	return nil
 }
 
 func IsServerRunning() bool {

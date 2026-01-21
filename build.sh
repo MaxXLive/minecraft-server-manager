@@ -81,3 +81,26 @@ for target in "${TARGETS[@]}"; do
 done
 
 echo "🎉 Build process complete. Binaries are in the /$OUTPUT_DIR directory."
+
+# Detect current OS and architecture
+CURRENT_OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+CURRENT_ARCH=$(uname -m)
+
+# Map architecture names
+if [ "$CURRENT_ARCH" == "x86_64" ]; then
+    CURRENT_ARCH="amd64"
+elif [ "$CURRENT_ARCH" == "aarch64" ] || [ "$CURRENT_ARCH" == "arm64" ]; then
+    CURRENT_ARCH="arm64"
+fi
+
+# Build the path to the binary
+BINARY_PATH="$(pwd)/$OUTPUT_DIR/minecraft-server-manager_${CURRENT_OS}_${CURRENT_ARCH}"
+
+if [ -f "$BINARY_PATH" ]; then
+    echo ""
+    echo "To use 'msm' in this session, run:"
+    echo "  source <(echo 'msm() { $BINARY_PATH \"\$@\"; }')"
+    echo ""
+    echo "Or add this to your ~/.bashrc or ~/.zshrc for permanent use:"
+    echo "  alias msm='$BINARY_PATH'"
+fi
