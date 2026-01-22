@@ -175,21 +175,34 @@ func Kill() error {
 	for i := 0; i < 10; i++ {
 		time.Sleep(1 * time.Second)
 		if !IsServerRunning() {
-			removeSessionLock()
-			return nil
+			break
 		}
 	}
 
 	// Force quit if still running
-	cmd = exec.Command("screen", "-S", sessionName, "-X", "quit")
-	err := cmd.Run()
-	if err != nil {
-		return fmt.Errorf("failed to kill session: %v", err)
+	if IsServerRunning() {
+		cmd = exec.Command("screen", "-S", sessionName, "-X", "quit")
+		cmd.Run()
 	}
 
-	time.Sleep(2 * time.Second)
+	// Wait for port 25565 to be released
+	waitForPortFree(25565)
+
 	removeSessionLock()
 	return nil
+}
+
+func waitForPortFree(port int) {
+	for i := 0; i < 15; i++ {
+		cmd := exec.Command("lsof", "-i", fmt.Sprintf(":%d", port))
+		output, _ := cmd.Output()
+		if len(output) == 0 {
+			return
+		}
+		log.Info("Waiting for port to be released...")
+		time.Sleep(1 * time.Second)
+	}
+	log.Error("Port may still be in use")
 }
 
 func removeSessionLock() {
