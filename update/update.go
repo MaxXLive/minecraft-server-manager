@@ -3,15 +3,16 @@ package update
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/hashicorp/go-version"
 	"io/ioutil"
-	"minecraft-server-manager/log"
 	"net/http"
 	"os"
 	"os/exec"
 	"runtime"
 	"strings"
-	"time"
+
+	"minecraft-server-manager/log"
+
+	"github.com/hashicorp/go-version"
 )
 
 const githubRepo = "maxxlive/minecraft-server-manager"
@@ -138,21 +139,13 @@ func updateScript(appPath string, latestVersion string) error {
 		return err
 	}
 
-	// Run the update script in the background
-	cmd := exec.Command("screen", "-S", "msm_updater", "bash", scriptPath)
-
-	cmd.Stdin = os.Stdin   // Enable user input
-	cmd.Stdout = os.Stdout // Show command output
-	cmd.Stderr = os.Stderr // Show error messages
-
-	go func() {
-		time.Sleep(1 * time.Second)
-		os.Exit(0)
-	}()
-
+	// Run the update script in a detached screen session
+	cmd := exec.Command("screen", "-dmS", "msm_updater", "bash", scriptPath)
 	err = cmd.Run()
 	if err != nil {
-		log.Error(err)
+		return err
 	}
+
+	log.Info("Update started in background. Check progress with: screen -r msm_updater")
 	return nil
 }
