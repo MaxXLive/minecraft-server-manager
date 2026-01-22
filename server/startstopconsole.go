@@ -166,13 +166,26 @@ func Kill() error {
 	}
 
 	sessionName := GetSelectedServerSessionName()
-	cmd := exec.Command("screen", "-S", sessionName, "-X", "quit")
+
+	// Send Ctrl+C (interrupt) to allow Java to release locks gracefully
+	cmd := exec.Command("screen", "-S", sessionName, "-X", "stuff", "\x03")
+	cmd.Run()
+
+	// Wait for process to terminate gracefully
+	for i := 0; i < 10; i++ {
+		time.Sleep(1 * time.Second)
+		if !IsServerRunning() {
+			return nil
+		}
+	}
+
+	// Force quit if still running
+	cmd = exec.Command("screen", "-S", sessionName, "-X", "quit")
 	err := cmd.Run()
 	if err != nil {
 		return fmt.Errorf("failed to kill session: %v", err)
 	}
 
-	// Wait for session to fully terminate
 	time.Sleep(2 * time.Second)
 	return nil
 }

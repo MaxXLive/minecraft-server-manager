@@ -11,7 +11,7 @@ import (
 	"os/exec"
 )
 
-var version = "1.6.1"
+var version = "1.6.2"
 
 func main() {
 	fmt.Println("--------- [ MINECRAFT SERVER MANAGER ] ---------")
@@ -47,6 +47,9 @@ func main() {
 		return
 	case "restart", "r":
 		server.Restart()
+		return
+	case "kill":
+		_ = server.Kill()
 		return
 	case "console", "c":
 		server.Attach()
