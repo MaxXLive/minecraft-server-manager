@@ -95,3 +95,11 @@ func GetLogFilePath() (string, error) {
 	executableDir := filepath.Dir(executablePath)
 	return filepath.Join(executableDir, "status.log"), nil
 }
+
+func GetHealthCheckURL() string {
+	config, err := LoadConfig()
+	if err != nil {
+		return ""
+	}
+	return config.HealthCheckURL
+}

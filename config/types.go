@@ -4,6 +4,7 @@ type ManagerConfig struct {
 	ScreenName     string   `json:"screen_name"`
 	Servers        []Server `json:"servers"`
 	LogFileEnabled bool     `json:"log_file_enabled"`
+	HealthCheckURL string   `json:"health_check_url"`
 }
 
 type Server struct {

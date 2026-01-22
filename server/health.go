@@ -1,12 +1,12 @@
 package server
 
 import (
+	"minecraft-server-manager/config"
 	"net/http"
 	"time"
 )
 
 const (
-	healthEndpoint      = "http://localhost:8080/metrics/current"
 	healthCheckTimeout  = 60 * time.Second
 	healthCheckInterval = 2 * time.Second
 	maxStartRetries     = 5
@@ -14,8 +14,13 @@ const (
 
 // checkHealthEndpoint makes a single HTTP GET request to the health endpoint
 func checkHealthEndpoint() bool {
+	url := config.GetHealthCheckURL()
+	if url == "" {
+		return false
+	}
+
 	client := &http.Client{Timeout: 5 * time.Second}
-	resp, err := client.Get(healthEndpoint)
+	resp, err := client.Get(url)
 	if err != nil {
 		return false
 	}
