@@ -175,6 +175,7 @@ func Kill() error {
 	for i := 0; i < 10; i++ {
 		time.Sleep(1 * time.Second)
 		if !IsServerRunning() {
+			removeSessionLock()
 			return nil
 		}
 	}
@@ -187,7 +188,23 @@ func Kill() error {
 	}
 
 	time.Sleep(2 * time.Second)
+	removeSessionLock()
 	return nil
+}
+
+func removeSessionLock() {
+	server, err := GetSelected()
+	if err != nil {
+		return
+	}
+
+	serverDir := filepath.Dir(server.JarPath)
+	lockFile := filepath.Join(serverDir, "world", "session.lock")
+
+	if _, err := os.Stat(lockFile); err == nil {
+		os.Remove(lockFile)
+		log.Info("Removed session.lock file")
+	}
 }
 
 func IsServerRunning() bool {
