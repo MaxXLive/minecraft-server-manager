@@ -62,6 +62,17 @@ func AddServer() {
 		return
 	}
 
+	// Ask for server port
+	portStr := promptInput("Enter server port (default: 25565)")
+	port := 25565
+	if portStr != "" {
+		port, err = strconv.Atoi(portStr)
+		if err != nil || port <= 0 || port > 65535 {
+			fmt.Println("\033[31mError: Invalid port value\033[0m")
+			return
+		}
+	}
+
 	serverID := uuid.New().String()
 
 	// Create new server entry
@@ -71,6 +82,7 @@ func AddServer() {
 		JarPath:  jarPath,
 		JavaPath: javaPath,
 		MaxRAM:   maxRam,
+		Port:     port,
 	}
 
 	server.Add(newServer)

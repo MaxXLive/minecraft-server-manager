@@ -23,6 +23,14 @@ func Start() {
 	}
 
 	log.Info("Selected Server: " + server.Name)
+
+	// Set port in server.properties if configured
+	if server.Port > 0 {
+		if err := SetServerPort(server.JarPath, server.Port); err != nil {
+			log.Error(fmt.Sprintf("Failed to set port: %v", err))
+		}
+	}
+
 	log.Info("Starting...")
 
 	dirPath := filepath.Dir(server.JarPath)
@@ -96,6 +104,13 @@ func StartInBackground() {
 }
 
 func startServerProcess(server config.Server) error {
+	// Set port in server.properties if configured
+	if server.Port > 0 {
+		if err := SetServerPort(server.JarPath, server.Port); err != nil {
+			log.Error(fmt.Sprintf("Failed to set port: %v", err))
+		}
+	}
+
 	dirPath := filepath.Dir(server.JarPath)
 	sessionName := GetSelectedServerSessionName()
 
@@ -165,6 +180,11 @@ func Kill() error {
 		return fmt.Errorf("server is not running")
 	}
 
+	server, err := GetSelected()
+	if err != nil {
+		return err
+	}
+
 	sessionName := GetSelectedServerSessionName()
 
 	// Send Ctrl+C (interrupt) to allow Java to release locks gracefully
@@ -185,8 +205,12 @@ func Kill() error {
 		cmd.Run()
 	}
 
-	// Wait for port 25565 to be released
-	waitForPortFree(25565)
+	// Wait for port to be released
+	port := server.Port
+	if port == 0 {
+		port = 25565 // default Minecraft port
+	}
+	waitForPortFree(port)
 
 	removeSessionLock()
 	return nil

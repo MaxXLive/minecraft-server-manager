@@ -13,6 +13,7 @@ type Server struct {
 	MaxRAM             int        `json:"max_ram"`
 	JarPath            string     `json:"jar_path"`
 	JavaPath           string     `json:"java_path"`
+	Port               int        `json:"port"`
 	Type               ServerType `json:"type"`
 	IsSelected         bool       `json:"is_selected"`
 	HealthCheckEnabled bool       `json:"health_check_enabled"`
