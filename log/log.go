@@ -23,10 +23,28 @@ func Init() {
 		path, err := config.GetLogFilePath()
 		if err == nil {
 			filePath = path
+			writeSessionSeparator()
 		} else {
 			fileEnabled = false
 		}
 	}
+}
+
+func writeSessionSeparator() {
+	if !fileEnabled || filePath == "" {
+		return
+	}
+
+	f, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return
+	}
+	defer f.Close()
+
+	timestamp := time.Now().Local().Format("2006-01-02 15:04:05")
+	f.WriteString(fmt.Sprintf("\n%s\n", "════════════════════════════════════════════════════════════"))
+	f.WriteString(fmt.Sprintf("[%s] Session started\n", timestamp))
+	f.WriteString(fmt.Sprintf("%s\n", "════════════════════════════════════════════════════════════"))
 }
 
 func writeToFile(level string, message string) {
