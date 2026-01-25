@@ -217,16 +217,51 @@ func Kill() error {
 }
 
 func waitForPortFree(port int) {
-	for i := 0; i < 15; i++ {
-		cmd := exec.Command("lsof", "-i", fmt.Sprintf(":%d", port))
-		output, _ := cmd.Output()
-		if len(output) == 0 {
+	// First, wait for port to be released naturally
+	for i := 0; i < 10; i++ {
+		if !isPortInUse(port) {
 			return
 		}
 		log.Info("Waiting for port to be released...")
 		time.Sleep(1 * time.Second)
 	}
+
+	// If still in use, kill the process using the port
+	log.Info("Port still in use, killing process...")
+	killProcessOnPort(port)
+
+	// Wait a bit more for port to be released
+	for i := 0; i < 5; i++ {
+		if !isPortInUse(port) {
+			return
+		}
+		time.Sleep(1 * time.Second)
+	}
 	log.Error("Port may still be in use")
+}
+
+func isPortInUse(port int) bool {
+	cmd := exec.Command("lsof", "-i", fmt.Sprintf(":%d", port))
+	output, _ := cmd.Output()
+	return len(output) > 0
+}
+
+func killProcessOnPort(port int) {
+	// Get PID using lsof
+	cmd := exec.Command("lsof", "-t", "-i", fmt.Sprintf(":%d", port))
+	output, err := cmd.Output()
+	if err != nil || len(output) == 0 {
+		return
+	}
+
+	// Kill each PID found
+	pids := strings.Split(strings.TrimSpace(string(output)), "\n")
+	for _, pid := range pids {
+		if pid != "" {
+			log.Info(fmt.Sprintf("Killing process %s on port %d", pid, port))
+			exec.Command("kill", "-9", pid).Run()
+		}
+	}
 }
 
 func removeSessionLock() {
