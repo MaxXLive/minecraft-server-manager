@@ -37,7 +37,8 @@ func Start() {
 
 	sessionName := GetSelectedServerSessionName()
 
-	cmd := exec.Command("screen", "-S", sessionName, "bash", "-c", fmt.Sprintf("cd %s && %s -Xms%dM -Xmx%dM -jar %s --nogui", dirPath, server.JavaPath, server.MaxRAM/2, server.MaxRAM, server.JarPath))
+	screenRC := config.GetScreenRCPath()
+	cmd := exec.Command("screen", "-c", screenRC, "-h", "10000", "-S", sessionName, "bash", "-c", fmt.Sprintf("cd %s && %s -Xms%dM -Xmx%dM -jar %s --nogui", dirPath, server.JavaPath, server.MaxRAM/2, server.MaxRAM, server.JarPath))
 
 	// Set the standard input, output, and error to the current process
 	cmd.Stdin = os.Stdin   // Enable user input
@@ -114,7 +115,8 @@ func startServerProcess(server config.Server) error {
 	dirPath := filepath.Dir(server.JarPath)
 	sessionName := GetSelectedServerSessionName()
 
-	cmd := exec.Command("screen", "-dmS", sessionName, "bash", "-c",
+	screenRC := config.GetScreenRCPath()
+	cmd := exec.Command("screen", "-c", screenRC, "-h", "10000", "-dmS", sessionName, "bash", "-c",
 		fmt.Sprintf("cd %s && %s -Xms%dM -Xmx%dM -jar %s --nogui",
 			dirPath, server.JavaPath, server.MaxRAM/2, server.MaxRAM, server.JarPath))
 

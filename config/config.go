@@ -103,3 +103,19 @@ func GetHealthCheckURL() string {
 	}
 	return config.HealthCheckURL
 }
+
+func GetScreenRCPath() string {
+	executablePath, err := os.Executable()
+	if err != nil {
+		return ""
+	}
+	executableDir := filepath.Dir(executablePath)
+	rcPath := filepath.Join(executableDir, ".screenrc")
+
+	// Create the file if it doesn't exist
+	if _, err := os.Stat(rcPath); os.IsNotExist(err) {
+		os.WriteFile(rcPath, []byte("termcapinfo xterm* ti@:te@\n"), 0644)
+	}
+
+	return rcPath
+}
